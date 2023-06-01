@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-lapis-lazuli py-4">
+    <div class="text-center">
+        <h2 class="flax text-2xl logo-font">The weather in {{ weather['name'] }} is currently: </h2>
+    </div>
+    <div class="flex flex-row justify-center">
+        <div class="bg-cornsilk w-40 m-3 rounded-xl ">
+            <div class="flex flex-col justify-center items-center">
+                <p class="text-center body-font pt-4">Current Conditions: </p>
+                <p class="text-center body-font pt-2">{{weather['weather'][0]['main']}}</p>
+            </div>
+        </div>
+        <div class="bg-cornsilk w-40 m-3 rounded-xl">
+            <p class="text-center body-font pt-4">Current Temp</p>
+            <p class="text-center body-font pt-1">{{ f_temp }}&deg; F</p>
+        </div>
+        <div class="bg-cornsilk w-40 m-3 rounded-xl">
+            <p class="text-center body-font">Sunrise: {{ sunrise }}</p>
+            <p class="text-center body-font">Sunset: {{ sunset }}</p>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

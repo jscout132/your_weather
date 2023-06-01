@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-lapis-lazuli flex flex-row justify-center py-4">
+    <div class="bg-cornsilk w-10/12 py-4 rounded">
+        <div class="text-center pb-3">
+            <div class="border-b-2 pb-3 mustard-border">
+                <h2 class="logo-font text-3xl indigo-dye">
+                    {{ current_user.f_name.title() }}'s Profile Page
+                </h2>
+            </div>
+            <div class="flex flex-row w-full justify-center pt-3">
+                <!-- input area -->
+                <div class="w-5/12">
+                    <label 
+                        for="city_search" 
+                        class="block mb-2 body-font text-gray-900">
+                            Find a city
+                    </label>
+                    <!-- TODO:  see if you can incorporate a google map search bar here to help with searching -->
+                    <form action="{{ url_for('site.profile') }}" method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <input type="text" name="user_input" class='bg-gray-50 border border-gray-300 
+                        text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 
+                        block w-full p-2.5'>
+                        <button class="body-font bg-princeton-orange cornsilk rounded-lg px-5 py-3 mt-2 shadow-md" type="submit">
+                            Search
+                        </button>
+
+                    </form>
+                </div>
+                <!-- show weather area -->
+                <div class="w-5/12">
+                    <p class="body-font">Weather Area</p>
+                    {% if user_weather %}
+                        <p class="body-font">location: {{ user_weather['name'] }}</p>
+                        <p class="body-font">temp: {{ user_weather.get('main', {}).get('temp') }}</p>
+                                                    
+                        <p class="body-font">condition: {{ user_weather['weather'][0]['main'] }}</p>
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+                            {{ form.submit_button(class='cornsilk body-font bg-princeton-orange hover:bg-indigo-dye focus:ring-4 focus:outline-none 
+                            focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 
+                            py-2.5 text-center shadow-md') }}
+
+                        </form>
+
+
+                    {% else %}
+                        <p class="body-font">Search for a city</p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end weather area section -->
+
+<!-- start favorite cities section -->
+<div class="bg-mustard w-full py-4">
+    <h2 class="logo-font text-center lapis-lazuli text-3xl">Your Favorited Cities</h2>
+    <div class="flex flex-row justify-center flex-wrap">
+        {% if fav_city_weather == None %}
+            <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+                <div class="border-b-2 lapis-lazuli-border pb-2">
+                    <p class="cornsilk text-lg">Favorite a city to see it saved here</p>
+                </div>
+            </div>
+        {% else %}
+            {% for i in fav_city_weather %}
+                <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+                    <div class="border-b-2 lapis-lazuli-border pb-2">
+                        <p class="cornsilk text-lg">{{ i['name'] }}</p>
+                    </div>
+                    <div class="pt-2">
+                        <p class="cornsilk">Temp: {{ i['main']['temp'] }}&deg; F</p>
+                        <p class="cornsilk">Conditions: {{ i['weather'][0]['main'] }}</p>
+                    </div>
+                </div>
+
+            {% endfor %}
+        {% endif %}
+
+
+    </div>
+    <div class="p-3 mt-3 flex flex-row justify-center">
+        <button class='text-white body-font bg-princeton-orange focus:ring-4 focus:outline-none 
+        focus:ring-blue-300 font-medium rounded-lg w-full sm:w-auto px-5 py-3 text-center shadow-md'
+        onclick="window.location.href='edit.html'">
+            Edit your cities
+        </button>
+    </div>  
+
+</div>
+
+{% endblock %}

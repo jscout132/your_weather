@@ -1,0 +1,79 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@font-face {
+    font-family: 'comfortaa-bold';
+    src: url('Comfortaa_Bold.ttf');
+
+    font-family: 'comfortaa';
+    src: url('Comfortaa_Regular.ttf')
+};
+.logo-font-bold{
+    font-family: 'comfortaa-bold';
+}
+.logo-font{
+    font-family: 'comfortaa';
+}
+
+@font-face {
+    font-family: 'monsterrat';
+    src: url('Montserrat-Regular.ttf');
+}
+.body-font{
+    font-family: 'monsterrat';
+}
+
+/* background colors */
+.bg-indigo-dye{
+    background-color: #094074;
+}
+.bg-lapis-lazuli{
+    background-color: #3C6997;
+}
+.bg-vivid-sky-blue{
+    background-color: #5ADBFF;
+}
+.bg-mustard{
+    background-color: #FFDD4A;
+}
+.bg-princeton-orange{
+    background-color: #FE9000;
+}
+.bg-flax{
+    background-color: #FDEC9D;
+}
+.bg-cornsilk{
+    background-color: #FFFAE4;
+}
+
+/* font colors */
+.indigo-dye{
+    color: #094074;
+}
+.lapis-lazuli{
+    color: #3C6997;
+}
+.vivid-sky-blue{
+    color: #5ADBFF;
+}
+.mustard{
+    color: #FFDD4A;
+}
+.princeton-orange{
+    color: #FE9000;
+}
+.flax{
+    color: #FDEC9D;
+}
+.cornsilk{
+    color: #FFFAE4;
+}
+
+.mustard-border{
+    border-color: #FFDD4A;
+}
+
+.lapis-lazuli-border{
+    border-color: #3C6997;
+}

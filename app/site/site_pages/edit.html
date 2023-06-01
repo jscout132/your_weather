@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script>
+    function ShowAndHide() {
+        var x = document.getElementById('editCity');
+        if (x.style.display == 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    }
+</script>
+
+
+    <div class="bg-lapis-lazuli w-100">
+        <div class="flex flex-row justify-center">
+            <div class="bg-cornsilk w-3/5 rounded py-3 mt-3">
+                <h2 class="logo-font text-center text-2xl">Edit {{current_user.f_name}}'s Cities</h2>
+            </div>
+        </div>
+
+        <div class="mt-4 mx-4 flex flex-row justify-center">
+            {% if fav_city_weather == None %}
+                <div>
+                    save a city to make edits
+                </div>
+            {% else %}
+                {% for i in user_cities %}
+                <div class="mx-3">
+                    <div class=" flex flex-row flex-wrap justify-center py-3">
+                        <div class="bg-cornsilk rounded-lg p-3">
+                            <p class="body-font">{{i['city'].title() }}</p>
+                        </div>
+                        <div class="flex flex-row">
+                            <div>
+                                <button class="body-font mx-2 my-2 text-sm bg-princeton-orange rounded-lg px-2 py-2 shadow-md"
+                                onclick="ShowAndHide()">
+                                    Edit City
+                                </button>
+                            </div>
+                            <div>
+                                <form action="edit/{{ i['id'] }}" method="POST" id="delete-form">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" 
+                                    onclick="return confirm('Are you sure you want to delete this item?')"
+                                    class='mx-2 my-2 body-font bg-princeton-orange focus:ring-4 focus:outline-none 
+                                    focus:ring-blue-300 rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center shadow-md'>
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+        </div>
+        <div id="editCity" style="display:none">
+            <input type="text" placeholder="edit city" class='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+            focus:ring-blue-500 focus:border-blue-500 block p-2.5 body-font'>
+            <button class="body-font mx-2 my-2 bg-princeton-orange rounded-md px-2 py-2">Save Edits</button>
+        </div>
+    </div>
+{% endblock %}
