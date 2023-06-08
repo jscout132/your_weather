@@ -1,28 +1,122 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<script>
+    let map;
+    async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    let city_lat = parseFloat("{{ weather['coord']['lat'] }}")
+    let city_lon = parseFloat("{{ weather['coord']['lon'] }}")
+
+    map = new Map(document.getElementById("map"), {
+        center: { lat: city_lat, lng: city_lon },
+        zoom: 8,
+    });
+    }
+
+    initMap();
+</script>
+
 <div class="bg-lapis-lazuli py-4">
     <div class="text-center">
         <h2 class="flax text-2xl logo-font">The weather in {{ weather['name'] }} is currently: </h2>
     </div>
+    <!-- YELLOW SQUARE WEATHER INFORMATION -->
+    <!-- ROW 1 -->
     <div class="flex flex-row justify-center">
-        <div class="bg-cornsilk w-40 m-3 rounded-xl ">
+        <div class="bg-cornsilk w-40 m-3 rounded-xl py-4">
             <div class="flex flex-col justify-center items-center">
-                <p class="text-center body-font pt-4">Current Conditions: </p>
-                <p class="text-center body-font pt-2">{{weather['weather'][0]['main']}}</p>
+                <p class="text-center body-font">Current Conditions: </p>
+                <p class="text-center body-font pt-2">{{ daily['current']['weather'][0]['description'].title() }}</p>
+
             </div>
         </div>
-        <div class="bg-cornsilk w-40 m-3 rounded-xl">
-            <p class="text-center body-font pt-4">Current Temp</p>
-            <p class="text-center body-font pt-1">{{ f_temp }}&deg; F</p>
+        <div class="bg-cornsilk w-40 m-3 rounded-xl py-4">
+            <p class="text-center body-font">Current Temp: </p>
+            <p class="text-center body-font pt-1">{{ weather['main']['temp'] }}&deg; F</p>
+
+            <p class="text-center body-font pt-4">Feels Like: </p>
+            <p class="text-center body-font pt-1">{{ daily['current']['feels_like'] }}&deg; F</p>
+
         </div>
-        <div class="bg-cornsilk w-40 m-3 rounded-xl">
-            <p class="text-center body-font">Sunrise: {{ sunrise }}</p>
-            <p class="text-center body-font">Sunset: {{ sunset }}</p>
+    </div>
+    <!-- END ROW 1 -->
+    <!-- ROW 2 -->
+    <div class="flex flex-row justify-center">
+        <div class="bg-cornsilk w-80 p-2 m-3 rounded-xl ">
+            <div class="flex flex-col justify-center items-center pb-3">
+                <p class="text-center body-font pt-4">Daily Summary: </p>
+                <p class="text-center body-font pt-2">{{ daily['daily'][7]['summary'] }}</p>
+            </div>
         </div>
 
     </div>
+    <!-- END ROW 2 -->
+    <!-- END YELLOW SQUARE WEATHER INFORMATION -->
 </div>
+<!-- END BLUE BACKGROUND -->
 
+<!-- START MAP INFORMATION -->
+<div class="flex flex-row justify-center my-3 h-96">
+    <div id="map" class="w-8/12 h-max">
+    </div>
+</div>
+<!-- END MAP INFORMATION -->
 
+<!-- START DAILY FORECAST SECTION -->
+<div class="bg-mustard w-full py-4">
+    <h2 class="logo-font text-center lapis-lazuli text-3xl">Forecasted Weather</h2>
+    <div class="flex flex-row justify-center flex-wrap"> 
+        <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+            <div class="border-b-2 lapis-lazuli-border pb-2">
+                <p class="cornsilk text-lg">{{ weekdays[day] }}</p>
+            </div>
+            <div class="pt-2">
+                <p class="cornsilk">{{ daily['daily'][0]['temp']['day'] }}&deg; F</p>
+                <p class="cornsilk">{{ daily['daily'][0]['weather'][0]['description'] }}</p>
+            </div>
+        </div>
+        <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+            <div class="border-b-2 lapis-lazuli-border pb-2">
+                <p class="cornsilk text-lg">{{ weekdays[day+1] }}</p>
+            </div>
+            <div class="pt-2">
+                <p class="cornsilk">{{ daily['daily'][1]['temp']['day'] }}&deg; F</p>
+                <p class="cornsilk">{{ daily['daily'][1]['weather'][0]['description'] }}</p>            
+            </div>
+        </div>
+        <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+            <div class="border-b-2 lapis-lazuli-border pb-2">
+                <p class="cornsilk text-lg">{{ weekdays[day+2] }}</p>
+            </div>
+            <div class="pt-2">
+                <p class="cornsilk">{{ daily['daily'][2]['temp']['day'] }}&deg; F</p>
+                <p class="cornsilk">{{ daily['daily'][2]['weather'][0]['description'] }}</p>
+            </div>
+        </div>
+        <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+            <div class="border-b-2 lapis-lazuli-border pb-2">
+                <p class="cornsilk text-lg">{{ weekdays[day+3] }}</p>
+            </div>
+            <div class="pt-2">
+                <p class="cornsilk">{{ daily['daily'][3]['temp']['day'] }}&deg; F</p>
+                <p class="cornsilk">{{ daily['daily'][3]['weather'][0]['description'] }}</p>
+            </div>
+        </div>
+        <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+            <div class="border-b-2 lapis-lazuli-border pb-2">
+                <p class="cornsilk text-lg">{{ weekdays[day+4] }}</p>
+            </div>
+            <div class="pt-2">
+                <p class="cornsilk">{{ daily['daily'][4]['temp']['day'] }}&deg; F</p>
+                <p class="cornsilk">{{ daily['daily'][4]['weather'][0]['description'] }}</p>
+            </div>
+        </div>
+    </div>
+    <!-- END DAILY FORECAST SECTION -->
+</div>
+<script
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEjS4jEmB1nDmtnqRAuJBCc5eOvltXbOw&callback=initMap&libraries=places&v=weekly"
+defer
+></script>
 {% endblock %}

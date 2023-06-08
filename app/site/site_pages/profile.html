@@ -1,6 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- CITY SEARCH BAR FUNCTIONALITY -->
+<script>
+    // TODO check to see if the user has their home city in the user table
+    // if so, pull those lat lon to center the map on
+    function initAutocomplete() {
+            var autocomplete = new google.maps.places.Autocomplete(
+              document.getElementById("autocomplete"),
+              {
+                types: ["(cities)"], // Restrict the search to cities only
+                componentRestrictions: { country: "us" }, // Restrict the search to the United States
+              }
+            );
+            
+            // Disable address and establishment predictions
+            autocomplete.setFields(["address_components"]);
+    
+            // When a city is selected, log its details
+            autocomplete.addListener("place_changed", function () {
+              var place = autocomplete.getPlace();
+              console.log(place.name);
+              console.log(place.address_components);
+            });
+          }
+    </script>
+    <!-- END CITY SEARCH BAR -->
+
 <div class="bg-lapis-lazuli flex flex-row justify-center py-4">
     <div class="bg-cornsilk w-10/12 py-4 rounded">
         <div class="text-center pb-3">
@@ -17,33 +43,27 @@
                         class="block mb-2 body-font text-gray-900">
                             Find a city
                     </label>
-                    <!-- TODO:  see if you can incorporate a google map search bar here to help with searching -->
                     <form action="{{ url_for('site.profile') }}" method="POST">
-                        {{ form.hidden_tag() }}
-
-                        <input type="text" name="user_input" class='bg-gray-50 border border-gray-300 
+                        <!-- GOOGLE MAPS SEARCH BAR -->
+                        <input id="autocomplete" name="user_input" placeholder="Enter a city" type="text" class='bg-gray-50 border border-gray-300 
                         text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 
-                        block w-full p-2.5'>
-                        <button class="body-font bg-princeton-orange cornsilk rounded-lg px-5 py-3 mt-2 shadow-md" type="submit">
-                            Search
-                        </button>
-
+                        block w-full p-2.5'/>
+                        <input type="submit" value="Search" class="body-font bg-princeton-orange cornsilk rounded-lg px-5 py-3 mt-2 shadow-md">
                     </form>
                 </div>
                 <!-- show weather area -->
                 <div class="w-5/12">
-                    <p class="body-font">Weather Area</p>
                     {% if user_weather %}
-                        <p class="body-font">location: {{ user_weather['name'] }}</p>
-                        <p class="body-font">temp: {{ user_weather.get('main', {}).get('temp') }}</p>
+                        <p class="body-font">City: {{ user_weather['name'] }}</p>
+                        <p class="body-font">Temp: {{ user_weather.get('main', {}).get('temp') }}&deg; F</p>
                                                     
                         <p class="body-font">condition: {{ user_weather['weather'][0]['main'] }}</p>
                         <form method="POST">
                             {{ form.hidden_tag() }}
+                            <!-- SAVE TO USER'S FAVORITE CITY BUTTON -->
                             {{ form.submit_button(class='cornsilk body-font bg-princeton-orange hover:bg-indigo-dye focus:ring-4 focus:outline-none 
                             focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 
                             py-2.5 text-center shadow-md') }}
-
                         </form>
 
 
@@ -75,16 +95,15 @@
                         <p class="cornsilk text-lg">{{ i['name'] }}</p>
                     </div>
                     <div class="pt-2">
-                        <p class="cornsilk">Temp: {{ i['main']['temp'] }}&deg; F</p>
-                        <p class="cornsilk">Conditions: {{ i['weather'][0]['main'] }}</p>
+                        <p class="cornsilk body-font">Temp: {{ i['main']['temp'] }}&deg; F</p>
+                        <p class="cornsilk body-font">Conditions: {{ i['weather'][0]['main'] }}</p>
                     </div>
                 </div>
 
             {% endfor %}
         {% endif %}
-
-
     </div>
+    
     <div class="p-3 mt-3 flex flex-row justify-center">
         <button class='text-white body-font bg-princeton-orange focus:ring-4 focus:outline-none 
         focus:ring-blue-300 font-medium rounded-lg w-full sm:w-auto px-5 py-3 text-center shadow-md'
@@ -94,5 +113,8 @@
     </div>  
 
 </div>
-
+<script
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEjS4jEmB1nDmtnqRAuJBCc5eOvltXbOw&callback=initAutocomplete&libraries=places&v=weekly"
+defer
+></script>
 {% endblock %}

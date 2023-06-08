@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script>
+// TODO check to see if the user has their home city in the user table
+// if so, pull those lat lon to center the map on
+function initAutocomplete() {
+        var autocomplete = new google.maps.places.Autocomplete(
+          document.getElementById("autocomplete"),
+          {
+            types: ["(cities)"], // Restrict the search to cities only
+            componentRestrictions: { country: "us" }, // Restrict the search to the United States
+          }
+        );
+        
+        // Disable address and establishment predictions
+        autocomplete.setFields(["address_components"]);
+
+        // When a city is selected, log its details
+        autocomplete.addListener("place_changed", function () {
+          var place = autocomplete.getPlace();
+          console.log(place.name);
+          console.log(place.address_components);
+        });
+      }
+</script>
+
+<div>maps page</div>
+<div>
+    <input id="autocomplete" placeholder="Enter a city" type="text" />
+</div>
+
+  <!-- 
+    The `defer` attribute causes the callback to execute after the full HTML
+    document has been parsed. For non-blocking uses, avoiding race conditions,
+    and consistent behavior across browsers, consider loading using Promises.
+    See https://developers.google.com/maps/documentation/javascript/load-maps-js-api
+    for more information.
+    -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEjS4jEmB1nDmtnqRAuJBCc5eOvltXbOw&callback=initAutocomplete&libraries=places&v=weekly"
+    defer
+  ></script>
+{% endblock %}
