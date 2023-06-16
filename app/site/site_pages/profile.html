@@ -3,14 +3,14 @@
 {% block content %}
 <!-- CITY SEARCH BAR FUNCTIONALITY -->
 <script>
-    // TODO check to see if the user has their home city in the user table
-    // if so, pull those lat lon to center the map on
+    
+    let place;
+
     function initAutocomplete() {
             var autocomplete = new google.maps.places.Autocomplete(
               document.getElementById("autocomplete"),
               {
                 types: ["(cities)"], // Restrict the search to cities only
-                componentRestrictions: { country: "us" }, // Restrict the search to the United States
               }
             );
             
@@ -18,12 +18,27 @@
             autocomplete.setFields(["address_components"]);
     
             // When a city is selected, log its details
+            // THIS IS WHAT I NEED TO LINK TO A BUTTON AS OPPOSED TO ADD LISTENER
             autocomplete.addListener("place_changed", function () {
-              var place = autocomplete.getPlace();
-              console.log(place.name);
-              console.log(place.address_components);
+                var place = autocomplete.getPlace();
+                document.getElementById("show_city").innerHTML = place['address_components'][0]['long_name'];
+                const api_key = 'e5d87fd9e2a278959ee764883b7aecfc'
+                let js_url = `https://api.openweathermap.org/data/2.5/weather?q=${place['address_components'][0]['long_name']}&appid=${api_key}&units=imperial`
+                fetch(js_url)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('city_temp').innerText = `Temp: ${data['main']['temp']} F`;
+                        document.getElementById('city_conditions').innerHTML = `Conditions: ${data['weather'][0]['description']}`;
+                        document.getElementById('save_button').style.display = 'inline';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
             });
+
+
           }
+
     </script>
     <!-- END CITY SEARCH BAR -->
 
@@ -43,33 +58,28 @@
                         class="block mb-2 body-font text-gray-900">
                             Find a city
                     </label>
-                    <form action="{{ url_for('site.profile') }}" method="POST">
+                    
+                    <form  method="POST">
                         <!-- GOOGLE MAPS SEARCH BAR -->
-                        <input id="autocomplete" name="user_input" placeholder="Enter a city" type="text" class='bg-gray-50 border border-gray-300 
-                        text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 
-                        block w-full p-2.5'/>
-                        <input type="submit" value="Search" class="body-font bg-princeton-orange cornsilk rounded-lg px-5 py-3 mt-2 shadow-md">
+                        {{ holder_dict['form'].city(id="autocomplete", placeholder="Enter a city", type="text", 
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+                            focus:border-blue-500 block w-full p-2.5")}}
+
+                        {{ holder_dict['form'].submit_button(class='cornsilk body-font bg-princeton-orange 
+                            hover:bg-indigo-dye focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium 
+                            rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center shadow-md mt-3') }}
                     </form>
                 </div>
                 <!-- show weather area -->
                 <div class="w-5/12">
-                    {% if user_weather %}
-                        <p class="body-font">City: {{ user_weather['name'] }}</p>
-                        <p class="body-font">Temp: {{ user_weather.get('main', {}).get('temp') }}&deg; F</p>
-                                                    
-                        <p class="body-font">condition: {{ user_weather['weather'][0]['main'] }}</p>
-                        <form method="POST">
-                            {{ form.hidden_tag() }}
-                            <!-- SAVE TO USER'S FAVORITE CITY BUTTON -->
-                            {{ form.submit_button(class='cornsilk body-font bg-princeton-orange hover:bg-indigo-dye focus:ring-4 focus:outline-none 
-                            focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 
-                            py-2.5 text-center shadow-md') }}
-                        </form>
-
-
-                    {% else %}
-                        <p class="body-font">Search for a city</p>
-                    {% endif %}
+                    <div id="show_city" class="body-font">
+                        Search for a city
+                    </div>
+                    <div id="city_temp" class="body-font">
+                    </div>
+                    <div id="city_conditions" class="body-font">
+                    </div>
+                  
                 </div>
             </div>
 
@@ -79,18 +89,27 @@
 <!-- end weather area section -->
 
 <!-- start favorite cities section -->
+<!-- TODO maybe have it enlarge when you click on a certain day? -->
 <div class="bg-mustard w-full py-4">
+    {% if user.query.get(current_user.id).user_city != '' %}
+        <h2 class="logo-font text-center lapis-lazuli text-3xl">{{ user.query.get(current_user.id).user_city.title() }} Forecasted Weather</h2>
+        <div class="flex flex-row justify-center flex-wrap">
+            city weather
+        </div>
+
+    {% endif %}
     <h2 class="logo-font text-center lapis-lazuli text-3xl">Your Favorited Cities</h2>
     <div class="flex flex-row justify-center flex-wrap">
-        {% if fav_city_weather == None %}
+        {% if holder_dict['fav_city_weather'] == None %}
             <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
                 <div class="border-b-2 lapis-lazuli-border pb-2">
                     <p class="cornsilk text-lg">Favorite a city to see it saved here</p>
                 </div>
             </div>
         {% else %}
-            {% for i in fav_city_weather %}
-                <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+            {% for i in holder_dict['fav_city_weather'] %}
+
+                <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center" id="{{ i['name'] }}">
                     <div class="border-b-2 lapis-lazuli-border pb-2">
                         <p class="cornsilk text-lg">{{ i['name'] }}</p>
                     </div>
@@ -111,6 +130,18 @@
             Edit your cities
         </button>
     </div>  
+
+</div>
+<div class="bg-lapis-lazuli">
+    {% if holder_dict['fav_city_weather'] == None %}
+
+    {% else %}
+    <div class="flex flex-row justify-center">
+
+        in the else
+    </div>
+
+    {% endif %}
 
 </div>
 <script

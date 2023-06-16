@@ -8,6 +8,7 @@ from models import User, FavoriteCities, login_manager, sqla, cities_schema, cit
 from forms import AddFavCity, DelFavCity
 from helpers import token_required
 import flask_login
+from flask_login import current_user, login_required
 
 site = Blueprint('site',__name__, template_folder='site_pages')
 
@@ -23,15 +24,23 @@ def about():
     return render_template('about.html')
 
 
-# TODO add some qc around the user_input to control for mis spellings- i think google maps will help with that? or the geocoding thing
-# TODO add some not allowed to view this page if you aren't logged in to profile and edit
-# TODO see if i can just use weather instead of the entire requests.get for fav_city_weather
 @site.route('/profile', methods = ['POST','GET'])
+@login_required
 def profile():
     user = User()
     form = AddFavCity()
 
-    user_input = request.form
+
+    # gets the daily forecast for the user's city, entered when creating a profile
+    find_user = user.query.get(current_user.id)
+    user_profile_city = find_user.user_city
+    if user_profile_city != '':
+        user_city_weather = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={user_profile_city}&appid={api_key}&units=imperial').json()
+        user_daily = requests.get(f'https://api.openweathermap.org/data/3.0/onecall?lat={user_city_weather["coord"]["lat"]}&lon={user_city_weather["coord"]["lon"]}&appid={api_key}&units=imperial').json()
+    else:
+        user_daily = ''
+
+    
     current_id = flask_login.current_user.get_id()
     user_cities = FavoriteCities.query.filter_by(user_id = current_id).all()
 
@@ -41,39 +50,42 @@ def profile():
     else:
         fav_city_weather = None
 
-    if 'user_input' not in user_input:
-        return render_template('profile.html', user=user, user_input = user_input, 
-                               form = form, user_cities = user_cities, fav_city_weather = fav_city_weather)
+
+    #holder dictionary to shorten list of variables being passed to profile.html
+    holder_dict = {
+        'fav_city_weather': fav_city_weather,
+        'user_daily': user_daily,
+        'form': form,
+        'weekdays': weekdays
+    }
+
+    # pulling city entered into search bar
+    user_input = request.form
+    
+    if request.method == 'POST': # and form.validate_on_submit():
+        print('in the try if')
+
+        address_list = user_input.getlist('city')
+        address = address_list[0].split(',')
+        city = address[0]
+        print('trying to get city name', city)
+
+        new_city = FavoriteCities(city = city, user_id = current_id)
+        sqla.session.add(new_city)
+        sqla.session.commit()
+        response = city_schema.dump(new_city)
+        return redirect('/profile')
+
+        # return render_template('profile.html', user = user, 
+        #                         holder_dict = holder_dict, user_daily = user_daily)
         
-    else:
-        for k,v in user_input.items():
-            weather_url = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={v}&appid={api_key}&units=imperial')
-            user_weather = weather_url.json()
 
-        try:
-            # TODO figure out why form.validate_on_submit() isn't working
-            if request.method == 'POST' and form.validate_on_submit():
-                user_id = flask_login.current_user.get_id()    
-                new_city = FavoriteCities(city = user_weather['name'], user_id = user_id)
-                print('this is the favorite cities', FavoriteCities())
-                sqla.session.add(new_city)
-                sqla.session.commit()
-                response = city_schema.dump(new_city)
-                # idk why jsonify(response) is None
-                print('this is the city schema dump response', jsonify(response))
-
-                return render_template('profile.html', user = user, user_input = user_input, user_weather = user_weather, 
-                                       form = form, user_cities = user_cities, fav_city_weather = fav_city_weather)
-            
-        except:
-            raise Exception('invalid form information')
-
-        return render_template('profile.html', user = user, user_input = user_input, user_weather = user_weather, 
-                               form = form, user_cities = user_cities, fav_city_weather = fav_city_weather)
+    return render_template('profile.html', user = user, 
+                            holder_dict = holder_dict, user_daily = user_daily)
 
 
-# TODO test edit page without any favorited cities   
 @site.route('/edit.html', methods = ['GET','POST','DELETE'])
+@login_required
 def edit():
     user = User()
     form = DelFavCity()
@@ -85,7 +97,6 @@ def edit():
 @site.route('/edit/<id>', methods = ['DELETE', 'POST'])
 def delete_item(id):
     selected_city = FavoriteCities.query.filter_by(id = id).first()
-    print('in the delete items')
     if request.form.get('_method') == 'DELETE':  #and form.validate_on_submit()
         sqla.session.delete(selected_city)
         sqla.session.commit()

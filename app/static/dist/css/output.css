@@ -1318,6 +1318,14 @@ input:checked + .toggle-bg {
   width: 100%;
 }
 
+.w-11\/12 {
+  width: 91.666667%;
+}
+
+.w-11 {
+  width: 2.75rem;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }

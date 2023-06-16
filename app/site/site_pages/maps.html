@@ -2,8 +2,7 @@
 
 {% block content %}
 <script>
-// TODO check to see if the user has their home city in the user table
-// if so, pull those lat lon to center the map on
+
 function initAutocomplete() {
         var autocomplete = new google.maps.places.Autocomplete(
           document.getElementById("autocomplete"),
@@ -19,8 +18,9 @@ function initAutocomplete() {
         // When a city is selected, log its details
         autocomplete.addListener("place_changed", function () {
           var place = autocomplete.getPlace();
-          console.log(place.name);
           console.log(place.address_components);
+          document.getElementById("city_name").innerHTML = place['address_components'][0]['long_name'];
+
         });
       }
 </script>
@@ -28,6 +28,10 @@ function initAutocomplete() {
 <div>maps page</div>
 <div>
     <input id="autocomplete" placeholder="Enter a city" type="text" />
+</div>
+<div id="city_name">
+  this is where i want the input to display
+
 </div>
 
   <!-- 

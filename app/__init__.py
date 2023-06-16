@@ -5,6 +5,7 @@ from flask_cors import CORS
 
 from .site.routes import site
 from .authentication.routes import auth
+from .api.open_weather import open_weather
 from config import Config
 from models import marsh, sqla, login_manager
 from helpers import Encoding
@@ -17,6 +18,8 @@ if __name__ == '__main__':
 
 app.register_blueprint(site)
 app.register_blueprint(auth)
+
+app.register_blueprint(open_weather)
 
 app.json_encoder = Encoding
 

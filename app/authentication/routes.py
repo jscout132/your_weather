@@ -49,8 +49,6 @@ def sign_in():
     
     return render_template('sign_in.html', form = form)
 
-
-# TODO add sign out
 @auth.route('/sign_out')
 def sign_out():
     logout_user()
