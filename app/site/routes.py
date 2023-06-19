@@ -29,14 +29,22 @@ def about():
 def profile():
     user = User()
     form = AddFavCity()
+    day = datetime.now().weekday()
 
 
     # gets the daily forecast for the user's city, entered when creating a profile
     find_user = user.query.get(current_user.id)
     user_profile_city = find_user.user_city
-    if user_profile_city != '':
+    user_city_weather = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={user_profile_city}&appid={api_key}&units=imperial').json()
+    
+    # API errors
+    # TODO: build out more specific error responses
+    errors =['400','401','404','429','5xx']
+
+    if user_city_weather['cod'] not in errors:
         user_city_weather = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={user_profile_city}&appid={api_key}&units=imperial').json()
         user_daily = requests.get(f'https://api.openweathermap.org/data/3.0/onecall?lat={user_city_weather["coord"]["lat"]}&lon={user_city_weather["coord"]["lon"]}&appid={api_key}&units=imperial').json()
+
     else:
         user_daily = ''
 
@@ -56,7 +64,8 @@ def profile():
         'fav_city_weather': fav_city_weather,
         'user_daily': user_daily,
         'form': form,
-        'weekdays': weekdays
+        'weekdays': weekdays,
+        'day': day
     }
 
     # pulling city entered into search bar
@@ -68,7 +77,6 @@ def profile():
         address_list = user_input.getlist('city')
         address = address_list[0].split(',')
         city = address[0]
-        print('trying to get city name', city)
 
         new_city = FavoriteCities(city = city, user_id = current_id)
         sqla.session.add(new_city)
@@ -76,12 +84,8 @@ def profile():
         response = city_schema.dump(new_city)
         return redirect('/profile')
 
-        # return render_template('profile.html', user = user, 
-        #                         holder_dict = holder_dict, user_daily = user_daily)
-        
 
-    return render_template('profile.html', user = user, 
-                            holder_dict = holder_dict, user_daily = user_daily)
+    return render_template('profile.html', user = user, holder_dict = holder_dict)
 
 
 @site.route('/edit.html', methods = ['GET','POST','DELETE'])

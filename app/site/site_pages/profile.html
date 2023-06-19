@@ -88,16 +88,68 @@
 </div>
 <!-- end weather area section -->
 
-<!-- start favorite cities section -->
-<!-- TODO maybe have it enlarge when you click on a certain day? -->
-<div class="bg-mustard w-full py-4">
-    {% if user.query.get(current_user.id).user_city != '' %}
+<!-- start user city section -->
+    {% if holder_dict['user_daily'] != '' %}
+    <div class="bg-cornsilk w-full py-4">
         <h2 class="logo-font text-center lapis-lazuli text-3xl">{{ user.query.get(current_user.id).user_city.title() }} Forecasted Weather</h2>
         <div class="flex flex-row justify-center flex-wrap">
-            city weather
-        </div>
+            <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+                <div class="border-b-2 lapis-lazuli-border pb-2">
+                    <p class="cornsilk text-lg body-font">{{ holder_dict['weekdays'][holder_dict['day']] }}</p>
+                </div>
+                <div class="pt-2">
+                    <p class="cornsilk body-font">Temp: {{ holder_dict['user_daily']['daily'][0]['temp']['day'] }}&deg; F</p>
+                    <p class="cornsilk body-font">Conditions: {{ holder_dict['user_daily']['daily'][0]['weather'][0]['description'] }}</p>
+                </div>
+            </div>
 
+            <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+                <div class="border-b-2 lapis-lazuli-border pb-2">
+                    <p class="cornsilk text-lg body-font">{{ holder_dict['weekdays'][holder_dict['day']+1] }}</p>
+                </div>
+                <div class="pt-2">
+                    <p class="cornsilk body-font">Temp: {{ holder_dict['user_daily']['daily'][1]['temp']['day'] }}&deg; F</p>
+                    <p class="cornsilk body-font">Conditions: {{ holder_dict['user_daily']['daily'][1]['weather'][0]['description'] }}</p>
+                </div>
+            </div>
+
+            <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+                <div class="border-b-2 lapis-lazuli-border pb-2">
+                    <p class="cornsilk text-lg body-font">{{ holder_dict['weekdays'][holder_dict['day']+2] }}</p>
+                </div>
+                <div class="pt-2">
+                    <p class="cornsilk body-font">Temp: {{ holder_dict['user_daily']['daily'][2]['temp']['day'] }}&deg; F</p>
+                    <p class="cornsilk body-font">Conditions: {{ holder_dict['user_daily']['daily'][2]['weather'][0]['description'] }}</p>
+                </div>
+            </div>
+
+            <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+                <div class="border-b-2 lapis-lazuli-border pb-2">
+                    <p class="cornsilk text-lg body-font">{{ holder_dict['weekdays'][holder_dict['day']+3] }}</p>
+                </div>
+                <div class="pt-2">
+                    <p class="cornsilk body-font">Temp: {{ holder_dict['user_daily']['daily'][3]['temp']['day'] }}&deg; F</p>
+                    <p class="cornsilk body-font">Conditions: {{ holder_dict['user_daily']['daily'][3]['weather'][0]['description'] }}</p>
+                </div>
+            </div>
+
+            <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center">
+                <div class="border-b-2 lapis-lazuli-border pb-2">
+                    <p class="cornsilk text-lg body-font">{{ holder_dict['weekdays'][holder_dict['day']+4] }}</p>
+                </div>
+                <div class="pt-2">
+                    <p class="cornsilk body-font">Temp: {{ holder_dict['user_daily']['daily'][4]['temp']['day'] }}&deg; F</p>
+                    <p class="cornsilk body-font">Conditions: {{ holder_dict['user_daily']['daily'][4]['weather'][0]['description'] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endif %}
+    <!-- End user city section -->
+
+    <!-- start saved cities section -->
+    <!-- TODO: add option to click city and see 5 day forecast for a saved city -->
+    <div class="bg-mustard w-full py-4">
     <h2 class="logo-font text-center lapis-lazuli text-3xl">Your Favorited Cities</h2>
     <div class="flex flex-row justify-center flex-wrap">
         {% if holder_dict['fav_city_weather'] == None %}
@@ -108,7 +160,14 @@
             </div>
         {% else %}
             {% for i in holder_dict['fav_city_weather'] %}
+                {% if i['name'] == Null %}
+                <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center max-w-xs" id="">
+                    <div class="border-b-2 lapis-lazuli-border pb-2">
+                        <p class="cornsilk text-lg">This city was not found.<br/>Please edit and try again</p>
+                    </div>
 
+                </div>
+                {% else %}
                 <div class="bg-indigo-dye m-4 p-4 rounded-xl text-center" id="{{ i['name'] }}">
                     <div class="border-b-2 lapis-lazuli-border pb-2">
                         <p class="cornsilk text-lg">{{ i['name'] }}</p>
@@ -118,6 +177,7 @@
                         <p class="cornsilk body-font">Conditions: {{ i['weather'][0]['main'] }}</p>
                     </div>
                 </div>
+                {% endif %}
 
             {% endfor %}
         {% endif %}
@@ -131,19 +191,9 @@
         </button>
     </div>  
 
-</div>
-<div class="bg-lapis-lazuli">
-    {% if holder_dict['fav_city_weather'] == None %}
-
-    {% else %}
-    <div class="flex flex-row justify-center">
-
-        in the else
     </div>
+    <!-- end saved cities section -->
 
-    {% endif %}
-
-</div>
 <script
 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEjS4jEmB1nDmtnqRAuJBCc5eOvltXbOw&callback=initAutocomplete&libraries=places&v=weekly"
 defer

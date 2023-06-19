@@ -1,11 +1,7 @@
 {% extends 'base.html' %}
 
-
-
 {% block content %}
 <script>
-    
-    let place;
     let inputs = document.getElementsByClassName("autocomplete")
     console.log(inputs)
     function initAutocomplete() {
@@ -18,30 +14,7 @@
             for (var i = 0; i < inputs.length; i++){
                 var autocomplete = new google.maps.places.Autocomplete(inputs[i],mapOptions);
                 autocomplete.inputId = inputs[i];
-                // autocomplete.addListener('place_changed', fillIn);
-                // autocompletes.push(autocomplete)
             }
-            // function fillIn(){
-            //     console.log(this.inputId);
-            //     var place = this.getPlace();
-            //     console.log(place.address_components[0].long_name)
-            // }
-            // var autocomplete = new google.maps.places.Autocomplete(
-            //   document.getElementsByClassName("autocomplete"),
-            //   {
-            //     types: ["(cities)"], // Restrict the search to cities only
-            //   }
-            // );
-            
-            // // Disable address and establishment predictions
-            // autocomplete.setFields(["address_components"]);
-    
-            // // When a city is selected, log its details
-            // autocomplete.addListener("place_changed", function () {
-            //     var place = autocomplete.getPlace();
-            //     document.getElementById("autocomplete").innerHTML = place['address_components'][0]['long_name'];
-            // });
-
           }
 
     </script>
@@ -51,12 +24,7 @@
                 <h2 class="logo-font text-center text-2xl">Edit {{current_user.f_name.title() }}'s Cities</h2>
             </div>
         </div>
-        <div id="1" class="">
-            <input type="text" class="autocomplete"/>
-        </div>
-        <div id="2" class="">
-            <input type="text" class="autocomplete"/>
-        </div>
+
         <div class="mt-4 mx-4 flex flex-row justify-center w-11/12 flex-wrap ">
             {% if fav_city_weather == None %}
                 <div>
