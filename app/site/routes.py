@@ -12,8 +12,6 @@ from flask_login import current_user, login_required
 
 site = Blueprint('site',__name__, template_folder='site_pages')
 
-# test to add comment to routes
-
 @site.route('/')
 @site.route('/home')
 def home():
